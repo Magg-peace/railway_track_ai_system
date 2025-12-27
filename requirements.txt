@@ -1,0 +1,62 @@
+# RailTrack - AI Railway Obstacle Detection System
+# Python Dependencies
+
+# Core Dependencies
+numpy>=1.24.0
+opencv-python>=4.8.0
+Pillow>=10.0.0
+pyyaml>=6.0
+tk  # For file selection dialogs
+
+# AI & Machine Learning
+ultralytics>=8.0.0  # YOLOv8
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Computer Vision
+opencv-contrib-python>=4.8.0
+scikit-image>=0.21.0
+imutils>=0.5.4
+
+# Communication & Alerts
+python-telegram-bot>=20.0
+requests>=2.31.0
+twilio>=8.10.0  # For SMS alerts
+
+# Database
+pymongo>=4.5.0
+firebase-admin>=6.2.0
+sqlalchemy>=2.0.0
+
+# GPS & Location
+pyserial>=3.5  # For GPS module
+gpsd-py3>=0.3.0
+
+# API & Web
+flask>=3.0.0
+flask-cors>=4.0.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+
+# Data Processing
+pandas>=2.1.0
+scipy>=1.11.0
+
+# Utilities
+python-dotenv>=1.0.0
+colorama>=0.4.6
+tqdm>=4.66.0
+loguru>=0.7.0
+
+# OpenAI for Explainable AI (optional)
+openai>=1.3.0
+
+# Edge Device (Uncomment if using Jetson Nano)
+# jetson-stats>=4.2.0
+# Jetson.GPIO>=2.1.0
+
+# Development & Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.9.0
+flake8>=6.1.0

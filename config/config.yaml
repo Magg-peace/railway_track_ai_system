@@ -1,0 +1,195 @@
+# RailTrack - Railway Obstacle Detection System Configuration
+
+# System Information
+system:
+  name: "RailTrack AI Safety System"
+  version: "1.0.0"
+  deployment_mode: "edge"  # edge or cloud
+
+# Camera Settings
+camera:
+  source: 0  # 0 for default camera, or video file path, or RTSP URL
+  resolution:
+    width: 1920
+    height: 1080
+  fps: 30
+  night_vision_enabled: true
+  auto_exposure: true
+
+# Video Processing
+video:
+  frame_skip: 1  # Process every Nth frame (1 = all frames)
+  resize_width: 640
+  resize_height: 480
+  clahe_enabled: true  # Contrast Limited Adaptive Histogram Equalization
+  denoise_enabled: true
+
+# YOLOv8 Model Configuration
+yolo:
+  model_path: "models/yolov8n.pt"  # yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt
+  confidence_threshold: 0.5
+  iou_threshold: 0.45
+  device: "cuda"  # cuda or cpu
+  half_precision: false  # FP16 for faster inference
+  
+  # Obstacle Classes
+  classes:
+    human: 0
+    vehicle: [2, 3, 5, 7]  # car, motorcycle, bus, truck
+    animal: [15, 16, 17, 18, 19, 20, 21, 22, 23]  # Various animals
+    debris: [24, 25, 26, 27]  # Various objects
+
+# Track Segmentation
+track:
+  roi_enabled: true
+  # Track boundaries (percentage of frame)
+  left_rail_x: 0.35
+  right_rail_x: 0.65
+  track_top_y: 0.4
+  track_bottom_y: 0.95
+  
+  # Zone definitions
+  zones:
+    critical_zone_width: 0.25  # Width around track center
+    warning_zone_width: 0.40   # Extended warning zone
+    safe_zone_threshold: 0.50   # Beyond this is safe
+
+# Multi-Frame Confirmation
+confirmation:
+  min_consecutive_frames: 5
+  max_frame_gap: 3  # Max frames obstacle can disappear
+  movement_threshold: 50  # Pixels - static object threshold
+  tracking_enabled: true
+
+# Distance & Time-to-Collision
+distance:
+  # Camera calibration (adjust based on your setup)
+  focal_length: 800  # pixels
+  known_object_heights:
+    human: 1.7  # meters
+    vehicle: 1.5  # meters
+    animal: 0.8  # meters
+  
+  # Train speed
+  default_train_speed: 60  # km/h
+  gps_enabled: false
+  
+  # TTC thresholds
+  ttc_critical: 20  # seconds
+  ttc_high: 40
+  ttc_medium: 60
+
+# Severity Classification
+severity:
+  rules:
+    critical:
+      - condition: "human on track and ttc < 20"
+      - condition: "vehicle on track and ttc < 15"
+    high:
+      - condition: "human near track and ttc < 40"
+      - condition: "animal on track"
+      - condition: "large debris on track"
+    medium:
+      - condition: "animal near track"
+      - condition: "small debris on track"
+      - condition: "vehicle near track and ttc < 60"
+    low:
+      - condition: "object in safe zone"
+      - condition: "ttc > 60"
+
+# Alert System
+alerts:
+  telegram:
+    enabled: true
+    bot_token: "YOUR_TELEGRAM_BOT_TOKEN"
+    chat_ids:
+      - "CONTROL_ROOM_CHAT_ID"
+      - "SUPERVISOR_CHAT_ID"
+  
+  sms:
+    enabled: false
+    api_key: "YOUR_SMS_API_KEY"
+    recipients:
+      - "+91XXXXXXXXXX"
+  
+  local:
+    sound_alert: true
+    display_alert: true
+  
+  escalation:
+    critical: ["telegram", "sms", "local"]
+    high: ["telegram", "local"]
+    medium: ["telegram"]
+    low: ["log_only"]
+
+# Incident Logging
+logging:
+  database:
+    type: "mongodb"  # mongodb, firebase, sqlite
+    connection_string: "mongodb://localhost:27017/"
+    database_name: "railtrack"
+    collection_name: "incidents"
+  
+  local_storage:
+    enabled: true
+    log_directory: "logs"
+    save_images: true
+    save_videos: false
+    max_storage_mb: 5000
+  
+  fields:
+    - timestamp
+    - gps_location
+    - obstacle_type
+    - severity
+    - ttc
+    - distance
+    - track_zone
+    - explanation
+    - image_path
+
+# GPS Configuration
+gps:
+  enabled: false
+  port: "COM3"
+  baudrate: 9600
+  update_interval: 1  # seconds
+
+# Explainable AI
+explainability:
+  enabled: true
+  llm_provider: "openai"  # openai, anthropic, local
+  api_key: "YOUR_API_KEY"
+  model: "gpt-4-vision-preview"
+  generate_reports: true
+  report_language: "english"
+
+# Performance Optimization
+performance:
+  max_fps: 30
+  enable_gpu: true
+  num_threads: 4
+  batch_processing: false
+  async_alerts: true
+
+# Safety Features
+safety:
+  auto_brake_integration: false
+  fail_safe_mode: true
+  redundant_detection: false
+  minimum_confidence_override: 0.7  # For critical scenarios
+
+# Analytics
+analytics:
+  enabled: true
+  high_risk_location_learning: true
+  pattern_recognition: true
+  daily_reports: true
+  report_time: "23:59"
+
+# Debug & Development
+debug:
+  show_visualization: true
+  save_debug_frames: false
+  verbose_logging: true
+  performance_metrics: true
